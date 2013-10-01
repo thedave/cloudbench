@@ -106,7 +106,7 @@ def identify_benchmark_volume(cloud, nobench):
 
 def create_api_assets(cloud, api_client, benchmark_volume):
     provider = api_client.providers.get_or_create(name=cloud.provider)
-    location = api_client.locations.get_or_create(name=cloud.location, provider=provider)
+    location = create_api_assetsclient.locations.get_or_create(name=cloud.location, provider=provider)
 
     instance_type = api_client.abstract_assets.get_or_create(name=cloud.instance_type)
     instance = api_client.physical_assets.get_or_create(asset=instance_type, location=location)
@@ -129,12 +129,12 @@ def warm_volume(base_job, fio_bin):
 def report_benchmark(api_client, assets, configuration, job_report):
     for metric, value in [("IOPS", job_report.avg_iops), ("LAT", job_report.avg_lat), ("BW", job_report.avg_bw)]:
 
-        api_client.measurements.create(
+        """api_client.measurements.create(
             configuration=configuration,
             assets=assets,
             metric=metric,
             value=value,
-        )
+        )"""
 
         logger.debug("Reported")
         logger.debug("Assets: %s", ", ".join([asset["asset"]["name"] for asset in assets]))
@@ -153,11 +153,11 @@ def run_benchmarks(api_client, assets, base_job, fio_bin, block_sizes, depths, m
             "stonewall": None,
         })
 
-        configuration = api_client.configurations.get_or_create(**{
+        configuration = False """ api_client.configurations.get_or_create(**{
                 "mode": job.mode,
                 "block_size": job.block_size.rstrip("k"),  # The API excepts an integer here.
                 "io_depth": job.io_depth
-        })
+        })"""
 
         engine = FIOEngine(job, fio_bin)
         report = engine.run_test()
@@ -169,10 +169,10 @@ def run_benchmarks(api_client, assets, base_job, fio_bin, block_sizes, depths, m
 def start_benchmark(cloud, api_client, benchmark_volume, fio_bin,  block_sizes, depths, modes, size, ramp, duration):
     # Create references in the API
     logger.debug("Creating API assets")
-    assets = create_api_assets(cloud, api_client, benchmark_volume)
+    assets = False # create_api_assets(cloud, api_client, benchmark_volume)
 
-    for asset in assets:
-        logger.info("Found asset: %s", asset)
+    # for asset in assets:
+    #    logger.info("Found asset: %s", asset)
 
     # Prepare jobs
     base_job = BASE_LINUX_JOB + Job({
@@ -231,16 +231,16 @@ def main():
     ramp = config.get("general", "ramp")
     duration = config.get("general", "duration")
 
-    reporting_endpoint = config.get("reporting", "endpoint")
-    reporting_username = config.get("reporting", "username")
-    reporting_key = config.get("reporting", "apikey")
+    # reporting_endpoint = config.get("reporting", "endpoint")
+    # reporting_username = config.get("reporting", "username")
+    # reporting_key = config.get("reporting", "apikey")
 
 
     # Final setup options before we daemonize, to let the user catch misconfiguration errors
     cloud = Cloud()
     volume = identify_benchmark_volume(cloud, no_bench)
 
-    api = Client(reporting_endpoint, APIKeyAuth(reporting_username, reporting_key))
+    api = False # Client(reporting_endpoint, APIKeyAuth(reporting_username, reporting_key))
 
     logger.info("Provider: %s", cloud.provider)
     logger.info("Location: %s", cloud.location)
