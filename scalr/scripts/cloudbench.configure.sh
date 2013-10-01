@@ -5,15 +5,10 @@ set -o nounset
 
 cat > $CLOUDBENCH_CONFIG << EOF
 [environment]
-nobench = $CLOUDBENCH_NOBENCH
-
-[reporting]
-endpoint = $CLOUDBENCH_ENDPOINT
-username = $CLOUDBENCH_USERNAME
-apikey = $CLOUDBENCH_API_KEY
+fio = /usr/local/bin/fio
 
 [benchmarks]
-blocksizes = $CLOUDBENCH_BLOCK_SIZES
-depths = $CLOUDBENCH_DEPTHS
-modes = $CLOUDBENCH_MODES
+blocksizes = 128k
+depths = 1,2,3,4
+modes = read,write,randread,randwrite,randrw
 EOF
